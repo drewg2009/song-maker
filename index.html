@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Song Maker</title>
+</head>
+
+<body>
+    <!-- <label>Upload sample to library</label><input type="file" /> -->
+    <button onclick="playSong()">Play Song</button>
+    <div>
+        <h2>Sample Library</h2>
+        <p onclick="bigDripper.play()">Big Dripper</p>
+        <p>Classic Electric Piano</p>
+        <p onclick="soCal.play()">SoCal</p>
+        Enter your song in the editor
+        <textarea id="songEditor"></textarea>
+        <br>
+        Here is a sample song you can copy and paste
+        <br>
+        <textarea readonly>Big Dripper, Classic Electric Piano
+Big Dripper, Classic Electric Piano, So Cal
+Big Dripper, So Cal</textarea>
+    </div>
+</body>
+<script>
+
+    const bigDripper = new Audio("Big Dripper.wav");
+    const soCal = new Audio("SoCal_1.wav");
+    const classicElectricPiano = new Audio("Classic Electric Piano.wav");
+
+    let allAudio = [
+        bigDripper,
+        soCal,
+        classicElectricPiano
+    ]
+
+    function pauseAllAudio() {
+        allAudio.forEach(el => el.pause());
+    }
+
+    let samples = {
+        "Big Dripper": bigDripper,
+        "So Cal": soCal,
+        "Classic Electric Piano": classicElectricPiano
+    }
+
+    function playSamplesInPart(songParts) {
+        if (songParts.length > 0) {
+            let currentPart = songParts.shift();
+            let samplesInPart = currentPart.split(",")
+            let partsToPlay = samplesInPart.length
+            samplesInPart.map(function (sampleInPart) {
+                const sampleKey = sampleInPart.trim()
+                samples[sampleKey].play()
+                samples[sampleKey].onended = function () {
+                    partsToPlay--
+                    if (partsToPlay == 0) {
+                        console.log("sample complete")
+                        if (songParts.length > 0) {
+                            playSamplesInPart(songParts)
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+
+    function playSong() {
+        pauseAllAudio()
+        let songText = document.querySelector("#songEditor").value
+        let songParts = songText.split("\n")
+        playSamplesInPart(songParts)
+    }
+
+</script>
+
+</html>
